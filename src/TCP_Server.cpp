@@ -19,9 +19,11 @@ TCP_Server *TCP_Server::getInstance()
 {
     if (TCP_Server::instance == NULL)
     {
+        std::cout << "Building server" << std::endl;
         TCP_Server serv = TCP_Server();
         TCP_Server::instance = &serv;
     }
+    std::cout << "returning server" << std::endl;
     return instance;
 }
 
@@ -61,6 +63,15 @@ TCP_Server::TCP_Server()
         delete[] message;
         exit(EXIT_FAILURE);
     }
+    
+    std::cout << toString() << std::endl;
+    if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
+    {
+        perror("In accept");
+
+        delete[] message;
+        exit(EXIT_FAILURE);
+    }
 
     std::cout << toString() << std::endl;
 }
@@ -82,16 +93,16 @@ void TCP_Server::sockRead()
 char *TCP_Server::connect()
 {
     printf("\n+++++++ Waiting for new connection ++++++++\n\n");
-    std::cout << toString() << std::endl;
-    if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
-    {
-        perror("In accept");
+    // std::cout << toString() << std::endl;
+    // if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
+    // {
+    //     perror("In accept");
 
-        delete[] message;
-        exit(EXIT_FAILURE);
-    }
+    //     delete[] message;
+    //     exit(EXIT_FAILURE);
+    // }
 
-    sockRead();
+    // sockRead();
 
     return message;
 }
@@ -146,9 +157,6 @@ std::string TCP_Server::toString()
     ss << "MESSAGE_SIZE:" << MESSAGE_SIZE << ",";
     ss << "server_fd:" << server_fd << ",";
     ss << "new_socket:" << new_socket << ",";
-    ss << "address:"
-       << "un printable"
-       << ",";
     ss << "message:" << message << ",";
     ss << "valread:" << valread << "}";
 
